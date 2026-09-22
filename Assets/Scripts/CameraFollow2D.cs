@@ -5,6 +5,7 @@ public class CameraFollow2D : MonoBehaviour
 {
     [Header("Target")]
     [SerializeField] private Transform target;
+    [SerializeField] private Vector2 offset = Vector2.zero;
 
     [Header("Axes")]
     [SerializeField] private bool followX = true;
@@ -22,10 +23,11 @@ public class CameraFollow2D : MonoBehaviour
         if (target == null) return;
 
         Vector3 desired = transform.position;
+        Vector2 focus = (Vector2)target.position + offset;
 
-        if(followX) desired.x = target.position.x;
+        if(followX) desired.x = focus.x;
 
-        if(followY) desired.y = target.position.y;
+        if(followY) desired.y = focus.y;
         else desired.y = fixedY;
 
         desired.z = -10f;
