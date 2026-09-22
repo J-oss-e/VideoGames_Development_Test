@@ -18,7 +18,23 @@ public class CameraFollow2D : MonoBehaviour
     [Header("Dead Zone")]
     [SerializeField] private Vector2 deadZone = Vector2.zero;
 
+    [Header("Look Ahead")]
+    [SerializeField] private float lookAheadDistance = 0f;
+    [SerializeField] private float lookAheadSmooth = 0.5f;
+
+    [Header("Bounds")]
+    [SerializeField] private BoxCollider2D levelBounds;
+
     private Vector3 velocity;
+    private Vector3 lastTargetPos;
+    private Vector2 currentLookAhead;
+    private Camera cam;
+
+    private void Awake()
+    {
+        cam = GetComponent<Camera>();
+        if (target != null) lastTargetPos = target.position;
+    }
 
     // Update is called once per frame
     void LateUpdate()
@@ -26,11 +42,19 @@ public class CameraFollow2D : MonoBehaviour
         if (target == null) return;
 
         Vector3 desired = transform.position;
-        Vector2 focus = (Vector2)target.position + offset;
+
+        Vector3 targetDelta = target.position - lastTargetPos;
+        lastTargetPos = target.position;
+        Vector2 lookGoal = Vector2.zero;
+        if(lookAheadDistance > 0f && targetDelta.sqrMagnitude > 0.0001f)
+            lookGoal = ((Vector2)targetDelta).normalized * lookAheadDistance;
+        currentLookAhead = Vector2.Lerp(currentLookAhead, lookGoal, Time.deltaTime / Mathf.Max(lookAheadSmooth, 0.01f));
+
+        Vector2 focus = (Vector2)target.position + offset + currentLookAhead;
 
         if (followX)
         {
-            float dx = focus.y - transform.position.y;
+            float dx = focus.x - transform.position.x;
             if(Mathf.Abs(dx) > deadZone.x)
                 desired.x = focus.x - Mathf.Sign(dx) * deadZone.x;
         }
@@ -43,9 +67,28 @@ public class CameraFollow2D : MonoBehaviour
         }
         else desired.y = fixedY;
 
+        if (levelBounds != null)
+            desired = ClampToBounds(desired);
+
         desired.z = -10f;
 
         transform.position = Vector3.SmoothDamp(transform.position, desired, ref velocity, smoothTime);
+    }
+
+    private Vector3 ClampToBounds(Vector3 pos)
+    {
+        float halfHeight = cam.orthographicSize;
+        float halfWidth = halfHeight * cam.aspect;
+
+        Bounds b = levelBounds.bounds;
+        float minX = b.min.x + halfWidth;
+        float maxX = b.max.x - halfWidth;
+        float minY = b.min.y + halfHeight;
+        float maxY = b.max.y - halfHeight;
+
+        pos.x = minX > maxX ? b.center.x : Mathf.Clamp(pos.x, minX, maxX);
+        pos.y = minY > maxY ? b.center.y : Mathf.Clamp(pos.y, minY, maxY);
+        return pos;
     }
 
     public void OnDrawGizmosSelected()
