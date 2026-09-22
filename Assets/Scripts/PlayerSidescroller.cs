@@ -21,6 +21,7 @@ public class PlayerSidescroller : MonoBehaviour
     private float coyoteCounter;
     private float jumpBufferCounter;
     private bool jumpRequested;
+    private bool jumpCutRequested;
 
     private void Awake()
     {
@@ -47,6 +48,8 @@ public class PlayerSidescroller : MonoBehaviour
           jumpBufferCounter = 0f;
           coyoteCounter = 0f;  
         } 
+
+        if(InputHelper.JumpReleased()) jumpCutRequested = true;
     }
 
     private void FixedUpdate()
@@ -57,6 +60,12 @@ public class PlayerSidescroller : MonoBehaviour
         {
             rb.linearVelocityY = jumpForce;
             jumpRequested = false;
+        }
+
+        if (jumpCutRequested)
+        {
+            if (rb.linearVelocityY > 0f) rb.linearVelocityY *= 0.5f;
+            jumpCutRequested = false;
         }
     }
 
