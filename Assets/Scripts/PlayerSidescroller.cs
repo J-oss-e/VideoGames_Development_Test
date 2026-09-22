@@ -7,6 +7,7 @@ public class PlayerSidescroller : MonoBehaviour
     [SerializeField] private float speed = 8f;
 
     private Rigidbody2D rb;
+    private float horizontalInput;
 
     private void Awake()
     {
@@ -15,7 +16,11 @@ public class PlayerSidescroller : MonoBehaviour
 
     private void Update()
     {
-        float x = InputHelper.Horizontal();
-        rb.linearVelocityX = x*speed;
+        horizontalInput = InputHelper.Horizontal();
+    }
+
+    private void FixedUpdate()
+    {
+        rb.linearVelocityX = horizontalInput * speed;
     }
 }
