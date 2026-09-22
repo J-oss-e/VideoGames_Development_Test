@@ -21,4 +21,18 @@ public static class InputHelper
         return Input.GetAxisRaw("Horizontal");
 #endif
     }
+
+    public static float Vertical()
+    {
+#if ENABLE_INPUT_SYSTEM
+        var kb = Keyboard.current;
+        if (kb == null) return 0f;
+        float y = 0f;
+        if (kb.sKey.isPressed || kb.downArrowKey.isPressed) y -= 1f;
+        if (kb.wKey.isPressed || kb.upArrowKey.isPressed) y += 1f;
+        return y;
+#else
+        return Input.GetAxisRaw("Vertical");
+#endif
+    }
 }
