@@ -12,8 +12,14 @@ public class PlayerSidescroller : MonoBehaviour
     [SerializeField] private float groundRadius = 0.15f;
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("Feel")]
+    [SerializeField] private float coyoteTime = 0.1f;
+    [SerializeField] private float jumpBufferTime = 0.1f;
+
     private Rigidbody2D rb;
     private float horizontalInput;
+    private float coyoteCounter;
+    private float jumpBufferCounter;
     private bool jumpRequested;
 
     private void Awake()
@@ -25,7 +31,22 @@ public class PlayerSidescroller : MonoBehaviour
     {
         horizontalInput = InputHelper.Horizontal();
 
-        if(InputHelper.JumpPressed() && IsGrounded()) jumpRequested = true;
+        if(IsGrounded()) 
+            coyoteCounter = coyoteTime;
+        else 
+            coyoteCounter -= Time.deltaTime;
+
+        if(InputHelper.JumpPressed())
+            jumpBufferCounter = jumpBufferTime;
+        else
+            jumpBufferCounter -= Time.deltaTime;
+
+        if(jumpBufferCounter > 0f && coyoteCounter > 0f)
+        {
+          jumpRequested = true;
+          jumpBufferCounter = 0f;
+          coyoteCounter = 0f;  
+        } 
     }
 
     private void FixedUpdate()
