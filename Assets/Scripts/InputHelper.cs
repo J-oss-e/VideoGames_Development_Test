@@ -22,6 +22,7 @@ public static class InputHelper
 #endif
     }
 
+    // Returns -1, 0 or 1 for down/up (S/W or arrow keys).
     public static float Vertical()
     {
 #if ENABLE_INPUT_SYSTEM
@@ -33,6 +34,26 @@ public static class InputHelper
         return y;
 #else
         return Input.GetAxisRaw("Vertical");
+#endif
+    }
+
+    // True on the frame the jump key (space) goes down.
+    public static bool JumpPressed()
+    {
+#if ENABLE_INPUT_SYSTEM
+        return Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
+#else
+        return Input.GetButtonDown("Jump");
+#endif
+    }
+
+    // True on the frame the jump key is released.
+    public static bool JumpReleased()
+    {
+#if ENABLE_INPUT_SYSTEM
+        return Keyboard.current != null && Keyboard.current.spaceKey.wasReleasedThisFrame;
+#else
+        return Input.GetButtonUp("Jump");
 #endif
     }
 }
