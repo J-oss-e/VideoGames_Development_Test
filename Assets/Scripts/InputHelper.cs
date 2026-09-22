@@ -1,3 +1,4 @@
+using System.Numerics;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -54,6 +55,16 @@ public static class InputHelper
         return Keyboard.current != null && Keyboard.current.spaceKey.wasReleasedThisFrame;
 #else
         return Input.GetButtonUp("Jump");
+#endif
+    }
+
+    // Mouse position in screen pixels.
+    public static Vector2 MouseScreenPosition()
+    {
+#if ENABLE_INPUT_SYSTEM
+        return Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
+#else 
+        return Input.mousePosition;
 #endif
     }
 }
