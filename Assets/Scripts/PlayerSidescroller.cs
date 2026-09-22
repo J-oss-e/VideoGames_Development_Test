@@ -22,15 +22,19 @@ public class PlayerSidescroller : MonoBehaviour
     private float jumpBufferCounter;
     private bool jumpRequested;
     private bool jumpCutRequested;
+    public int FacingDirection { get; private set; } = 1;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     private void Update()
     {
         horizontalInput = InputHelper.Horizontal();
+
+        if (horizontalInput != 0) FacingDirection = horizontalInput > 0 ? 1 : -1;
 
         if(IsGrounded()) 
             coyoteCounter = coyoteTime;
