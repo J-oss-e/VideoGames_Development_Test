@@ -298,7 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb889240b4ddee54bbb45603fea1d45f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTopDown
-  speed: 6
+  speed: 10
   acceleration: 150
   deceleration: 50
   faceMouse: 0
